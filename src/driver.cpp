@@ -36,13 +36,13 @@ int run(){
         clear_screen();
         switch(choice){
         case 1:
-            maze_gen::get_width_and_height();
+            maze_gen::maze_generator::get_width_and_height();
             clear_screen();
             display_menu();
             break;
         case 2:
-            maze_gen::generate_maze();
-            maze_gen::print_maze();
+            maze_gen::maze_generator::generate_maze();
+            maze_gen::maze_generator::print_maze();
             display_menu();
             break;
         case 3:

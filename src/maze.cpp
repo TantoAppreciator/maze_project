@@ -1,19 +1,21 @@
 #include "maze.h"
 
 namespace maze_gen{
-int width = -1;
-int height = -1;
 
-std::vector<std::vector<char>> maze;
+maze_generator::maze_generator():
+    width(0), height(0), rng(std::random_device{}()){}
 
-void get_width_and_height() {
+maze_generator::maze_generator(int w, int h):
+    width(w), height(h), rng(std::random_device{}()){}
+
+void maze_generator::get_width_and_height() {
     int num;
 
     do {
         std::cout << "Enter an odd number for width: ";
         std::cin >> num;
-        if (num % 2 == 0) {
-            std::cout << "Width must be an odd number!" << std::endl;
+        if (num % 2 == 0 || num == 1) {
+            std::cout << "Width must be an odd number and greater than 1!" << std::endl;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             continue;
@@ -30,8 +32,8 @@ void get_width_and_height() {
     do {
         std::cout << "Enter an odd number for height: ";
         std::cin >> num;
-        if (num % 2 == 0) {
-            std::cout << "Height must be an odd number!" << std::endl;
+        if (num % 2 == 0 || num == 1) {
+            std::cout << "Height must be an odd number and greater than 1!" << std::endl;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             continue;
@@ -46,43 +48,43 @@ void get_width_and_height() {
     height = num;
 }
 
-void generate_maze(){
+void maze_generator::generate_maze(){
     parameters_definition_check();
-    maze.resize(height);
+    current_maze = maze(width, height);
+    rng.seed();
     for (int i = 0; i < height; ++i){
-        maze[i].resize(width);
         for (int j = 0; j < width; ++j)
             if(i % 2 != 0 && j % 2 != 0 && (i < height - 1) && (j < width - 1))
-                maze[i][j] = CELL;
+                current_maze.grid[i][j] = CELL;
             else
-                maze[i][j] = WALL;
+                current_maze.grid[i][j] = WALL;
     }
     //DFS algorithm
 }
 
-void print_maze(){
+void maze_generator::print_maze(){
     parameters_definition_check();
     for (int i = 0; i < height; ++i){
         for (int j = 0; j < width; ++j)
-            std::cout << maze[i][j] << CELL;
+            std::cout << current_maze.grid[i][j] << CELL;
         std::cout << std::endl;
     }
 }
 
-void parameters_definition_check(){
-    if(width == -1 || height == -1){
+void maze_generator::parameters_definition_check(){
+    if(width == 0 || height == 0){
         std::cout << "Please define width and height" << std::endl;
         return;
     }
 }
-}
 
-class cell{
+
+/*class cell{
     public:
         int x;
         int y;
         cell(int x, int y): x(x), y(y) {}
-    };
+};
 
 class cell_string{
 private:
@@ -97,10 +99,12 @@ public:
     }
 };
 
-    /*cell_string get_neighbors(cell cell, maze maze){
+    cell_string get_neighbors(cell cell){
         cell_string res;
-        if (cell.x < SIZE - 1){
+        if (cell.x < width - 1){
 
     }
     return res;
-    }*/
+    }
+    */
+}
