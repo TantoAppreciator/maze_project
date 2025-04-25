@@ -11,6 +11,8 @@ void clear_screen(){
     #endif
 }
 
+maze_gen::maze_generator M(0,0);
+
 void display_menu(){
     std::cout << R"(
 Maze Generator 
@@ -36,31 +38,36 @@ int run(){
         clear_screen();
         switch(choice){
         case 1:
-            maze_gen::maze_generator::get_width_and_height();
+            M.get_width_and_height();
             clear_screen();
             display_menu();
             break;
         case 2:
-            maze_gen::maze_generator::generate_maze();
-            maze_gen::maze_generator::print_maze();
+            M.generate_maze();
+            M.print_maze();
             display_menu();
             break;
         case 3:
             todo();
+            display_menu();
             break;        
         case 4:
             todo();
+            display_menu();
             break;
         case 5:
             todo();
+            display_menu();
             break;
         case 6:
             todo();
+            display_menu();
             break;
         case 7:
             continue;
         default: 
             std::cout << "Please try again" << std::endl;
+            display_menu();
             break;
         }
     } while (choice != 7);

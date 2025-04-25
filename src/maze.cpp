@@ -52,28 +52,36 @@ void maze_generator::generate_maze(){
     parameters_definition_check();
     current_maze = maze(width, height);
     rng.seed();
+    current_maze.grid.resize(height);
     for (int i = 0; i < height; ++i){
+        current_maze.grid[i].resize(width);
         for (int j = 0; j < width; ++j)
             if(i % 2 != 0 && j % 2 != 0 && (i < height - 1) && (j < width - 1))
                 current_maze.grid[i][j] = CELL;
             else
                 current_maze.grid[i][j] = WALL;
     }
-    //DFS algorithm
+    carve_maze(1,1);
+    add_entrance_and_exit();
 }
 
-void maze_generator::print_maze(){
+void maze_generator::print_maze()const{
     parameters_definition_check();
-    for (int i = 0; i < height; ++i){
-        for (int j = 0; j < width; ++j)
-            std::cout << current_maze.grid[i][j] << CELL;
-        std::cout << std::endl;
+    std::stringstream ss;
+    ss<<"Viewing " << current_maze.name << "maze" << std::endl;
+
+    for(const auto &row : current_maze.grid){
+        for (char cell : row)
+            ss << cell;
+        ss << std::endl;
     }
+
+    std::cout << ss.str();
 }
 
-void maze_generator::parameters_definition_check(){
-    if(width == 0 || height == 0){
-        std::cout << "Please define width and height" << std::endl;
+void maze_generator::parameters_definition_check() const{
+    if(current_maze.grid.empty()){
+        std::cout << "Please define width and height and/or load pre-made maze" << std::endl;
         return;
     }
 }
