@@ -6,6 +6,7 @@
 #include <fstream>
 #include <algorithm>
 #include <sstream>
+#include <stack>
 #define WALL '#'
 #define CELL ' '
 #define VISITED true
@@ -36,6 +37,7 @@ namespace maze_gen{
 
             void carve_maze(int x, int y);
             void add_entrance_and_exit();
+            std::vector<cell> get_unvisited_cells()const;
         public:
             maze_generator();
             maze_generator(int w, int h);

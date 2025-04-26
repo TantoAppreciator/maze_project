@@ -2,6 +2,45 @@
 
 namespace maze_gen{
 
+void maze_generator::carve_maze(int x, int y){
+    std::stack<cell> st;
+    cell current_cell(x,y);
+    current_maze.visited[x][y] = VISITED;
+    cell neighbor_cell;
+    do{
+        std::vector<cell> neighbors = get_neighbors(current_cell);
+        if(neighbors.size() > 0){
+            std::shuffle(neighbors.begin(), neighbors.end(),rng);
+            neighbor_cell = neighbors[0];
+            st.push(current_cell);
+            remove_wall(current_cell, neighbor_cell);
+            current_cell = neighbor_cell;
+            current_maze.visited[current_cell.x][current_cell.y] = VISITED;
+        }
+        else if (st.size() > 0){
+            st.pop();
+            current_cell = st.top();
+        }
+        else{
+            std::vector<cell> unvisited = get_unvisited_cells();
+            std::shuffle(unvisited.begin(), unvisited.end(), rng);
+            current_cell = unvisited[0];
+        }
+    } while(get_unvisited_cells().size() > 0);
+}
+
+std::vector<cell> maze_generator::get_unvisited_cells()const{
+    std::vector<cell> res;
+    for(int i = 1; i < height-2; i+=2)
+        for(int j = 1; j < width-2; j+=2)
+            if(!current_maze.visited[i][j]){
+                cell c(i,j);
+                res.push_back(c);
+            } 
+    return res;
+}
+
+
 maze_generator::maze_generator():
     width(0), height(0), rng(std::random_device{}()){}
 
@@ -49,8 +88,11 @@ void maze_generator::get_width_and_height() {
 }
 
 void maze_generator::generate_maze(){
-    parameters_definition_check();
-    rng.seed();
+    if(width < 1 || height < 1){
+        std::cout << "Please define width and height and/or load pre-made maze" << std::endl;
+        return;
+    }
+    rng.seed(std::random_device{}());
     current_maze = maze(width, height);
     current_maze.grid.resize(height);
     current_maze.visited.resize(height);
@@ -65,12 +107,16 @@ void maze_generator::generate_maze(){
             current_maze.visited[i][j] = false;
         }
     }
-    //carve_maze(1,1);
+    carve_maze(1,1);
+    print_maze();
     //add_entrance_and_exit();
 }
 
 void maze_generator::print_maze()const{
-    parameters_definition_check();
+    if(width < 1 || height < 1){
+        std::cout << "Please define width and height and/or load pre-made maze" << std::endl;
+        return;
+    }
     std::stringstream ss;
     ss<<"Viewing " << current_maze.name << " maze" << std::endl;
 
@@ -81,13 +127,6 @@ void maze_generator::print_maze()const{
     }
 
     std::cout << ss.str();
-}
-
-void maze_generator::parameters_definition_check()const{
-    if(width < 1 || height < 1){
-        std::cout << "Please define width and height and/or load pre-made maze" << std::endl;
-        return;
-    }
 }
 
 std::vector<cell> maze_generator::get_neighbors(cell c)const{

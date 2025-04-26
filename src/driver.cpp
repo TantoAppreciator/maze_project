@@ -44,7 +44,6 @@ int run(){
             break;
         case 2:
             M.generate_maze();
-            M.print_maze();
             display_menu();
             break;
         case 3:
