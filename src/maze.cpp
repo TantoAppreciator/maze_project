@@ -55,20 +55,22 @@ void maze_generator::generate_maze(){
     current_maze.grid.resize(height);
     for (int i = 0; i < height; ++i){
         current_maze.grid[i].resize(width);
-        for (int j = 0; j < width; ++j)
+        for (int j = 0; j < width; ++j){
             if(i % 2 != 0 && j % 2 != 0 && (i < height - 1) && (j < width - 1))
                 current_maze.grid[i][j] = CELL;
             else
                 current_maze.grid[i][j] = WALL;
+            current_maze.visited[i][j] = false;
+        }
     }
-    carve_maze(1,1);
-    add_entrance_and_exit();
+    //carve_maze(1,1);
+    //add_entrance_and_exit();
 }
 
 void maze_generator::print_maze()const{
     parameters_definition_check();
     std::stringstream ss;
-    ss<<"Viewing " << current_maze.name << "maze" << std::endl;
+    ss<<"Viewing " << current_maze.name << " maze" << std::endl;
 
     for(const auto &row : current_maze.grid){
         for (char cell : row)
@@ -79,40 +81,37 @@ void maze_generator::print_maze()const{
     std::cout << ss.str();
 }
 
-void maze_generator::parameters_definition_check() const{
-    if(current_maze.grid.empty()){
+void maze_generator::parameters_definition_check()const{
+    if(width < 1 || height < 1){
         std::cout << "Please define width and height and/or load pre-made maze" << std::endl;
         return;
     }
 }
 
-
-/*class cell{
-    public:
-        int x;
-        int y;
-        cell(int x, int y): x(x), y(y) {}
-};
-
-class cell_string{
-private:
+std::vector<cell> maze_generator::get_neighbors(cell c)const{
+    std::vector<cell> res;
     std::vector<cell> cells;
-
-public:
-    void add_cell(cell a){
-        cells.push_back(a);
-    }
-    int get_length(){
-        return cells.size();
-    }
-};
-
-    cell_string get_neighbors(cell cell){
-        cell_string res;
-        if (cell.x < width - 1){
-
+    cell up = cell(c.x, c.y - 2);
+    cell rt = cell(c.x + 2, c.y);
+    cell dw = cell(c.x, c.y + 2);
+    cell lt = cell(c.x - 2, c.y);
+    cells.insert(res.end(), {up, rt, dw, lt});
+    for (cell neighb : cells){
+        if(neighb.x < width && neighb.y < height && neighb.x > 0 && neighb.y > 0 && 
+            current_maze.grid[neighb.x][neighb.y] != WALL && current_maze.visited[neighb.x][neighb.y] != VISITED){
+            res.push_back(neighb);
+        }
     }
     return res;
-    }
-    */
+}
+    void maze_generator::remove_wall(cell first, cell second){
+        short int xdiff = second.x - first.x;
+        short int ydiff = second.y - first.y;
+
+        short int addx = (xdiff != 0) ? (xdiff/abs(xdiff)) : 0;
+        short int addy = (ydiff != 0) ? (ydiff/abs(ydiff)) : 0;
+
+        current_maze.grid[first.x + addx][first.y + addy] = CELL;
+        current_maze.visited[first.x + addx][first.y + addy] = VISITED;
+}
 }
