@@ -50,11 +50,13 @@ void maze_generator::get_width_and_height() {
 
 void maze_generator::generate_maze(){
     parameters_definition_check();
-    current_maze = maze(width, height);
     rng.seed();
+    current_maze = maze(width, height);
     current_maze.grid.resize(height);
+    current_maze.visited.resize(height);
     for (int i = 0; i < height; ++i){
         current_maze.grid[i].resize(width);
+        current_maze.visited[i].resize(width);
         for (int j = 0; j < width; ++j){
             if(i % 2 != 0 && j % 2 != 0 && (i < height - 1) && (j < width - 1))
                 current_maze.grid[i][j] = CELL;
@@ -74,7 +76,7 @@ void maze_generator::print_maze()const{
 
     for(const auto &row : current_maze.grid){
         for (char cell : row)
-            ss << cell;
+            ss << cell << CELL;
         ss << std::endl;
     }
 
