@@ -45,11 +45,10 @@ namespace maze_gen{
             void get_width_and_height();
             void generate_maze();
             void print_maze()const;
-            void parameters_definition_check() const;
             void save(const std::string& filename);
             bool load(const std::string& filename);
-            std::vector<cell> get_neighbors(cell c)const;
-            void remove_wall(cell first, cell second);
+            std::vector<cell> get_neighbors(cell& c)const;
+            void remove_wall(cell &first, cell &second);
     };
 
 } 
