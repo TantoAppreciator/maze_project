@@ -35,7 +35,7 @@ void maze_generator::carve_maze(int x, int y){
 
 void maze_generator::add_entrance_and_exit(){
     current_maze.grid[0][1] = CELL;
-    current_maze.grid[height - 1][width-2] = CELL;
+    current_maze.grid[height - 1][width - 2] = CELL;
     return;
 }
 
@@ -238,4 +238,75 @@ std::vector<cell> maze_generator::get_neighbors(cell &c)const{
         std::cout<<"Maze " << current_maze.name << " successfully loaded" << std::endl;
         return true;
     }
+    std::vector<cell> maze_generator::get_neighbors_solver(cell& c)const{
+        std::vector<cell> res;
+        std::vector<cell> cells;
+    
+        cell up = cell(c.x, c.y - 2);
+        cell rt = cell(c.x + 2, c.y);
+        cell dw = cell(c.x, c.y + 2);
+        cell lt = cell(c.x - 2, c.y);
+    
+        cells.insert(res.end(), {up, rt, dw, lt});
+    
+        for (cell neighb : cells){
+            if(neighb.x < height && neighb.y < width && neighb.x > 0 && neighb.y > 0 && 
+                current_maze.grid[neighb.x][neighb.y] != WALL && current_maze.visited[neighb.x][neighb.y] != VISITED && 
+                current_maze.grid[(neighb.x + c.x)/2][(neighb.y + c.y)/2] != WALL){     //unlike get_neighbors, checks if there's a wall between them
+                res.push_back(neighb);                                                  //needed for solver
+            }
+        }
+        return res;
+    }
+
+    void maze_generator::solve(){
+        std::stack<cell> solution;
+        cell current_cell(1, 1);
+        cell neighbor_cell;
+        std::vector<std::vector<char>> solved_grid = current_maze.grid;
+        for (int i = 0; i < height; ++i){
+            for (int j = 0; j < width; ++j)
+                current_maze.visited[i][j] = false;
+        }
+        current_maze.visited[1][1] = VISITED;
+       do{
+            std::vector<cell> neighbors = get_neighbors_solver(current_cell);
+            if(neighbors.size() > 0){
+                solution.push(current_cell);
+                solved_grid[current_cell.x][current_cell.y] = PATH;
+                current_maze.visited[current_cell.x][current_cell.y] = VISITED;
+                std::shuffle(neighbors.begin(), neighbors.end(),rng);
+                neighbor_cell = neighbors[0];
+                solution.push(neighbor_cell);
+                solved_grid[(current_cell.x + neighbor_cell.x)/2][(current_cell.y + neighbor_cell.y)/2] = PATH;
+                solved_grid[neighbor_cell.x][neighbor_cell.y] = PATH;
+                current_maze.visited[neighbor_cell.x][neighbor_cell.y] = VISITED;
+                current_cell = neighbor_cell;
+            }
+            else{
+                solution.pop();
+                solved_grid[current_cell.x][current_cell.y] = CELL;
+                solved_grid[(current_cell.x + solution.top().x)/2][(current_cell.y + solution.top().y)/2] = CELL;
+                current_cell = solution.top();
+                solved_grid[current_cell.x][current_cell.y] = CELL;
+            }
+        } while(current_cell.x != height - 2 || current_cell.y != width - 2);
+        std::stringstream ss;
+        ss<<"Viewing solved " << current_maze.name << " maze" << std::endl;
+    
+        for(const auto &row : solved_grid){
+            for (char cell : row)
+                if(cell == '*'){
+                    ss << RED << cell << RESET << CELL;
+                }
+                else{
+                    ss << cell << CELL;
+                }
+            ss << std::endl;
+        }
+    
+        std::cout << ss.str();
+        return;
+    }
+
 }

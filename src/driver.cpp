@@ -69,7 +69,7 @@ int run(){
             }   
             break;
         case 5:
-            todo();
+            M.solve();
             display_menu();
             break;
         case 6:
@@ -80,6 +80,8 @@ int run(){
             continue;
         default: 
             std::cout << "Please try again" << std::endl;
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
             display_menu();
             break;
         }
