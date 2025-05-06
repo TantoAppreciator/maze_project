@@ -73,7 +73,7 @@ int run(){
             display_menu();
             break;
         case 6:
-            todo();
+            M.play();
             display_menu();
             break;
         case 7:

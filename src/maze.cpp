@@ -308,5 +308,56 @@ std::vector<cell> maze_generator::get_neighbors(cell &c)const{
         std::cout << ss.str();
         return;
     }
+    void maze_generator::play()const{
+        // saving current shell settings
+        termios original_attributes;
+        tcgetattr(STDIN_FILENO, &original_attributes);
 
+        // changing shell settings: turning off canonical mode and echo
+        termios modified_attributes = original_attributes;
+        modified_attributes.c_lflag &= ~(ICANON | ECHO);
+        modified_attributes.c_cc[VMIN] = 0;  // do not wait input
+        modified_attributes.c_cc[VTIME] = 0; // return handling right away
+        tcsetattr(STDIN_FILENO, TCSANOW, &modified_attributes);
+
+        std::vector<std::vector<char>> play_grid = current_maze.grid;
+        cell current_cell(1,1);
+        while(current_cell.x != height - 2 || current_cell.y != width - 2){
+            char c;
+            play_grid[current_cell.x][current_cell.y] = ' ';
+
+            if (read(STDIN_FILENO, &c, 1) == 1) {
+                if (c == 'q') break;              
+                else if (c == 'w' && play_grid[current_cell.x-1][current_cell.y] != WALL && (current_cell.x != 1 && current_cell.y != 1)) current_cell.x-=2;  
+                else if (c == 's' && play_grid[current_cell.x+1][current_cell.y] != WALL) current_cell.x+=2;  
+                else if (c == 'a' && play_grid[current_cell.x][current_cell.y-1] != WALL) current_cell.y-=2;  
+                else if (c == 'd' && play_grid[current_cell.x][current_cell.y+1] != WALL) current_cell.y+=2;  
+            }
+
+            play_grid[current_cell.x][current_cell.y] = '*';
+            driver_logic::clear_screen();
+    
+            std::stringstream ss;
+            for(const auto &row : play_grid){
+                for (char cell : row)
+                    if(cell == '*'){
+                        ss << RED << cell << RESET << CELL;
+                    }
+                    else{
+                        ss << cell << CELL;
+                    }
+                ss << std::endl;
+            }
+
+            std::cout << ss.str();
+
+            std::cout << "Use WASD to move, Q to quit" << std::endl;
+            std::cout << std::flush; 
+    
+            usleep(100000);
+        }
+        // setting shell settings back
+        tcsetattr(STDIN_FILENO, TCSANOW, &original_attributes);
+        return;
+        }
 }
