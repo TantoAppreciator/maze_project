@@ -22,7 +22,6 @@ void maze_generator::carve_maze(int x, int y){
             current_cell = st.top();
         }
         else if (if_unvisited()){
-            std::cout << "hello\n";
             std::vector<cell> unvisited = get_unvisited_cells();
             std::shuffle(unvisited.begin(), unvisited.end(), rng);
             current_cell = unvisited[0];
@@ -70,8 +69,8 @@ void maze_generator::get_width_and_height() {
     do {
         std::cout << "Enter an odd number for width: ";
         std::cin >> num;
-        if (num % 2 == 0 || num <= 1) {
-            std::cout << "Width must be an odd positive number greater than 1!" << std::endl;
+        if (num % 2 == 0 || num <= 3) {
+            std::cout << "Width must be an odd number greater than 3!" << std::endl;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             continue;
@@ -88,8 +87,8 @@ void maze_generator::get_width_and_height() {
     do {
         std::cout << "Enter an odd number for height: ";
         std::cin >> num;
-        if (num % 2 == 0 || num <= 1) {
-            std::cout << "Height must be an odd positive number greater than 1!" << std::endl;
+        if (num % 2 == 0 || num <= 3) {
+            std::cout << "Height must be an odd number greater than 3!" << std::endl;
             std::cin.clear();
             std::cin.ignore(10000, '\n');
             continue;
@@ -267,6 +266,10 @@ std::vector<cell> maze_generator::get_neighbors(cell &c)const{
     }
 
     void maze_generator::solve(){
+        if(current_maze.grid.size() <= 0){
+            std::cout << "Please generate or load maze first" << std::endl;
+            return;
+        }
         std::stack<cell> solution;
         cell current_cell(1, 1);
         cell neighbor_cell;
@@ -316,6 +319,10 @@ std::vector<cell> maze_generator::get_neighbors(cell &c)const{
         return;
     }
     void maze_generator::play()const{
+        if(current_maze.grid.size() <= 0){
+            std::cout << "Please generate or load maze first" << std::endl;
+            return;
+        }
         // saving current shell settings
         termios original_attributes;
         tcgetattr(STDIN_FILENO, &original_attributes);
@@ -335,7 +342,7 @@ std::vector<cell> maze_generator::get_neighbors(cell &c)const{
 
             if (read(STDIN_FILENO, &c, 1) == 1) {
                 if (c == 'q') break;              
-                else if (c == 'w' && play_grid[current_cell.x-1][current_cell.y] != WALL && (current_cell.x != 1 && current_cell.y != 1)) current_cell.x-=2;  
+                else if (c == 'w' && play_grid[current_cell.x-1][current_cell.y] != WALL && (current_cell.x != 1 || current_cell.y != 1)) current_cell.x-=2;  
                 else if (c == 's' && play_grid[current_cell.x+1][current_cell.y] != WALL) current_cell.x+=2;  
                 else if (c == 'a' && play_grid[current_cell.x][current_cell.y-1] != WALL) current_cell.y-=2;  
                 else if (c == 'd' && play_grid[current_cell.x][current_cell.y+1] != WALL) current_cell.y+=2;  
