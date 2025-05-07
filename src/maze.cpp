@@ -21,7 +21,8 @@ void maze_generator::carve_maze(int x, int y){
             st.pop();
             current_cell = st.top();
         }
-        else if (get_unvisited_cells().size() > 0){
+        else if (if_unvisited()){
+            std::cout << "hello\n";
             std::vector<cell> unvisited = get_unvisited_cells();
             std::shuffle(unvisited.begin(), unvisited.end(), rng);
             current_cell = unvisited[0];
@@ -29,7 +30,7 @@ void maze_generator::carve_maze(int x, int y){
         else {
             break;
         }
-    } while(get_unvisited_cells().size() > 0);
+    } while(if_unvisited());
     return;
 }
 
@@ -38,7 +39,13 @@ void maze_generator::add_entrance_and_exit(){
     current_maze.grid[height - 1][width - 2] = CELL;
     return;
 }
-
+bool maze_generator::if_unvisited()const{
+    for(int i = 1; i < height; i+=2)
+        for(int j = 1; j < width; j+=2)
+            if(!current_maze.visited[i][j])
+                return true;
+    return false;
+}
 std::vector<cell> maze_generator::get_unvisited_cells()const{
     std::vector<cell> res;
     for(int i = 1; i < height; i+=2)

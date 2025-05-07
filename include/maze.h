@@ -55,6 +55,7 @@ namespace maze_gen{
             bool load(const std::string& filename);
             void solve();
             void play()const;
+            bool if_unvisited()const;
             std::vector<cell> get_neighbors(cell& c)const;
             std::vector<cell> get_neighbors_solver(cell& c)const;
             void remove_wall(cell &first, cell &second);
