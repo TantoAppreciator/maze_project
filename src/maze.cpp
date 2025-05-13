@@ -76,16 +76,16 @@ std::vector<cell> maze_generator::get_unvisited_cells() const {
 //Default constructor: initializes maze dimensions to 0 and seeds the random number generator.
 maze_generator::maze_generator() : width(0), height(0), rng(std::random_device{}()) {}
 
-/**
- * Parameterized constructor: sets maze dimensions and seeds the random number generator.
- * @param w Width of the maze.
- * @param h Height of the maze.
+/*
+ Parameterized constructor: sets maze dimensions and seeds the random number generator.
+ param w Width of the maze.
+ param h Height of the maze.
  */
 maze_generator::maze_generator(int w, int h) : width(w), height(h), rng(std::random_device{}()) {}
 
 /**
- * Prompts the user to input odd numbers greater than 3 for maze width and height.
- * Includes input validation to ensure valid dimensions.
+ Prompts the user to input odd numbers greater than 3 for maze width and height.
+ Includes input validation to ensure valid dimensions.
  */
 void maze_generator::get_width_and_height() {
     int num;
@@ -126,9 +126,9 @@ void maze_generator::get_width_and_height() {
     height = num;
 }
 
-/**
- * Generates a maze with the specified width and height.
- * Initializes the grid and visited array, carves paths, and adds entrance/exit.
+/*
+ Generates a maze with the specified width and height.
+ Initializes the grid and visited array, carves paths, and adds entrance/exit.
  */
 void maze_generator::generate_maze() {
     // Ensure dimensions are valid for maze generation
